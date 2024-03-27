@@ -5,7 +5,7 @@
     <?php
         $host = "localhost";
         $username = "root";
-        $password = "Zo_glass1"; // Insert your password for MySQL
+        $password = ""; // Insert your password for MySQL
         $dbase = "user_database";
 
         // Create connection
