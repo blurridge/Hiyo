@@ -15,7 +15,7 @@ CREATE TABLE attendance (
     idNumber VARCHAR(10),
     timeEntered DATETIME,
     timeLeft DATETIME NULL,
-    FOREIGN KEY (idNumber) REFERENCES users(idNumber)
+    FOREIGN KEY (idNumber) REFERENCES users(idNumber) ON DELETE CASCADE
 );
 
 /* Test Cases */

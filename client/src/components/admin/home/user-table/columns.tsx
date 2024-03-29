@@ -13,6 +13,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/use-toast";
+import axios from "axios";
+import { useUser } from "@/context/UserContext";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -39,6 +42,27 @@ export const columns: ColumnDef<User>[] = [
     id: "actions",
     cell: ({ row }) => {
       const user = row.original;
+      const { toast } = useToast();
+      const { fetchUsers } = useUser();
+      const deleteUser = (idNumber: string) => {
+        const id = idNumber;
+        axios
+          .delete(`http://localhost:8080/api/user/${id}`)
+          .then((response) => {
+            toast({
+              description: `ID ${id} successfully deleted!`,
+              title: "✅ SUCCESS",
+            });
+            fetchUsers();
+          })
+          .catch((error) => {
+            toast({
+              variant: "destructive",
+              description: `An error occurred deleting ID ${id}`,
+              title: "❌ ERROR",
+            });
+          });
+      };
 
       return (
         <DropdownMenu>
@@ -57,7 +81,9 @@ export const columns: ColumnDef<User>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem>Delete</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => deleteUser(user.idNumber)}>
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
