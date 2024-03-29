@@ -22,7 +22,8 @@ export const registrationFormSchema = z.object({
     .max(255, { message: "Address must be at most 255 characters." }),
   contactNumber: z
     .string()
-    .min(11, { message: "Contact number must be at least 11 digits." }),
+    .min(11, { message: "Contact number must be at least 11 digits." })
+    .max(11, { message: "Contact number must be at most 11 digits." }),
   email: z.string().email({ message: "Invalid email address" }),
 });
 

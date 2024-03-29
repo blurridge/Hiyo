@@ -14,7 +14,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "../ui/use-toast";
-
+import axios from "axios";
+import { User
+ } from "@/types/types";
 export const RegistrationForm = () => {
   const form = useForm<registrationFormType>({
     resolver: zodResolver(registrationFormSchema),
@@ -31,7 +33,12 @@ export const RegistrationForm = () => {
   const { toast } = useToast();
 
   const onSubmit = (values: registrationFormType) => {
-    console.log(values);
+    const finalPayload: User = {...values, timeEntered: new Date(), timeLeft: null};
+    axios
+      .post("http://localhost:8080/api/user/save", finalPayload)
+      .then(function (response) {
+        console.log(response.data);
+      });
     toast({
       description: `✅ ${values.idNumber} successfully registered and recorded!`,
     });

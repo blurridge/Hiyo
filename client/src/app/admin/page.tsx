@@ -12,27 +12,8 @@ function getData(): User[] {
       address: "sad",
       contactNumber: "09173198899",
       email: "18020919@usc.edu.ph",
-    },
-    {
-      idNumber: "1212121212",
-      userName: "Zach Riane",
-      address: "sad",
-      contactNumber: "09173198899",
-      email: "18020919@usc.edu.ph",
-    },
-    {
-      idNumber: "18020919",
-      userName: "Zach Riane",
-      address: "sad",
-      contactNumber: "09173198899",
-      email: "18020919@usc.edu.ph",
-    },
-    {
-      idNumber: "18020919",
-      userName: "Zach Riane",
-      address: "sad",
-      contactNumber: "09173198899",
-      email: "18020919@usc.edu.ph",
+      timeEntered: new Date(Date.now()),
+      timeLeft: undefined,
     },
     // ...
   ];

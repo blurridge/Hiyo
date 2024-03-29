@@ -4,6 +4,8 @@ export type User = {
   address: string;
   contactNumber: string;
   email: string;
+  timeEntered: Date | null;
+  timeLeft: Date | null;
 };
 
 export type Attendance = {
