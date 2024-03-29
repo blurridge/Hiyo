@@ -21,7 +21,7 @@ const config = {
       colors: {
         'light-purple': '#C7BEF5',
         'light-blue': '#EDF3FE',
-        'dark-purple': '#A393ED',
+        'dark-purple': '#340b61',
         'hiyo-purple': '#4F1091',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
