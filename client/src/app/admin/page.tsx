@@ -1,31 +1,17 @@
+'use client'
+
 import { Navbar } from "@/components/admin/home/Navbar";
 import { DataTable } from "@/components/admin/home/user-table/DataTable";
 import { columns } from "@/components/admin/home/user-table/columns";
-import { User } from "@/types/types";
-
-function getData(): User[] {
-  // Fetch data from your API here.
-  return [
-    {
-      idNumber: "18020919",
-      userName: "Zach Riane",
-      address: "sad",
-      contactNumber: "09173198899",
-      email: "18020919@usc.edu.ph",
-      timeEntered: new Date(Date.now()),
-      timeLeft: undefined,
-    },
-    // ...
-  ];
-}
+import { useUser } from "@/context/UserContext";
 
 export const Page = () => {
-  const data = getData();
+  const { users, loading } = useUser();
   return (
     <>
       <div className="flex flex-col">
         <Navbar />
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={users} />
       </div>
     </>
   );
