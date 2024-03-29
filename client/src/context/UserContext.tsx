@@ -1,5 +1,5 @@
 "use client";
-import { User } from "@/types/types";
+import { Attendance, User } from "@/types/types";
 import axios from "axios";
 import {
   ReactNode,
@@ -10,7 +10,7 @@ import {
 } from "react";
 
 type UserContextProps = {
-  users: User[];
+  users: User[] & Attendance[];
   loading: boolean;
 };
 
@@ -20,11 +20,11 @@ const UserContext = createContext<UserContextProps>({
 });
 
 export const UserContextProvider = ({ children }: { children: ReactNode }) => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[] & Attendance[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     setLoading(true);
-    axios.get("http://localhost:8080/api/users/").then(function (response) {
+    axios.get("http://localhost:8080/api/").then(function (response) {
       console.log(response.data);
       console.log(response.data)
       setUsers(response.data);

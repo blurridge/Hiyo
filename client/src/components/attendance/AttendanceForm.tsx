@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "../ui/use-toast";
-
+import { useUser } from "@/context/UserContext";
 
 export const AttendanceForm = () => {
   const form = useForm<attendanceFormType>({
@@ -26,9 +26,9 @@ export const AttendanceForm = () => {
 
   const { reset } = form;
   const { toast } = useToast();
+  const { users, loading } = useUser();
 
   const onSubmit = (values: attendanceFormType) => {
-    console.log(values);
     toast({
       description: `✅ Attendance recorded for ${values.idNumber}!`
     });
