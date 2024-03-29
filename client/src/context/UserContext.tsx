@@ -12,27 +12,38 @@ import {
 type UserContextProps = {
   users: User[] & Attendance[];
   loading: boolean;
+  fetchUsers: () => void;
 };
 
 const UserContext = createContext<UserContextProps>({
   users: [],
   loading: true,
+  fetchUsers: () => {},
 });
 
 export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [users, setUsers] = useState<User[] & Attendance[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  useEffect(() => {
+
+  const fetchUsers = () => {
     setLoading(true);
-    axios.get("http://localhost:8080/api/").then(function (response) {
-      console.log(response.data);
-      console.log(response.data)
-      setUsers(response.data);
-    });
-    setLoading(false);
+    axios
+      .get("http://localhost:8080/api/")
+      .then(function (response) {
+        setUsers(response.data);
+        setLoading(false);
+      })
+      .catch(function (error) {
+        console.error("Failed to fetch users:", error);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchUsers();
   }, []);
   return (
-    <UserContext.Provider value={{ users, loading }}>
+    <UserContext.Provider value={{ users, loading, fetchUsers }}>
       {children}
     </UserContext.Provider>
   );

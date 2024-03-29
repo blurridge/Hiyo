@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "../ui/use-toast";
 import { useUser } from "@/context/UserContext";
+import axios from "axios";
 
 export const AttendanceForm = () => {
   const form = useForm<attendanceFormType>({
@@ -29,9 +30,39 @@ export const AttendanceForm = () => {
   const { users, loading } = useUser();
 
   const onSubmit = (values: attendanceFormType) => {
-    toast({
-      description: `✅ Attendance recorded for ${values.idNumber}!`
-    });
+    const userExists = users.some((user) => user.idNumber === values.idNumber);
+    if (userExists) {
+      axios
+        .put("http://localhost:8080/api/", values)
+        .then((response) => {
+          // Interpret response to customize the toast message
+          let toastMessage = response.data.message;
+          if (response.data.action === "timeEnteredRecorded") {
+            toastMessage = `Time entered recorded for ${values.idNumber}!`;
+          } else if (response.data.action === "timeLeftUpdated") {
+            toastMessage = `Time left updated for ${values.idNumber}!`;
+          }
+
+          toast({
+            description: toastMessage,
+            title: response.data.status ? "✅ SUCCESS" : "❌ ERROR",
+            variant: response.data.status ? "default" : "destructive",
+          });
+        })
+        .catch((error) => {
+          toast({
+            variant: "destructive",
+            description: `An error occurred updating the attendance for ID ${values.idNumber}`,
+            title: "❌ ERROR",
+          });
+        });
+    } else {
+      toast({
+        variant: "destructive",
+        description: `A record does not exist ID ${values.idNumber}. Please register first.`,
+        title: "❌ ERROR",
+      });
+    }
     reset({});
   };
 

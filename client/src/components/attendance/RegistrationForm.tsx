@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "../ui/use-toast";
 import axios from "axios";
 import { User } from "@/types/types";
+import { useUser } from "@/context/UserContext";
 
 export const RegistrationForm = () => {
   const form = useForm<registrationFormType>({
@@ -31,29 +32,34 @@ export const RegistrationForm = () => {
 
   const { reset } = form;
   const { toast } = useToast();
+  const { users, fetchUsers } = useUser();
 
   const onSubmit = (values: registrationFormType) => {
-    const finalPayload: User = {
-      ...values,
-      timeEntered: new Date(),
-      timeLeft: null,
-    };
-    axios
-      .post("http://localhost:8080/api/", finalPayload)
-      .then(function (response) {
-        console.log(response);
-        toast({
-          description: `✅ ${values.idNumber} successfully registered and recorded!`,
-        });
-      })
-      .catch(function (error) {
-        console.log(error);
-        toast({
-          variant: "destructive",
-          description: `❌ ERROR: ${values.idNumber} not registered`,
-        });
+    const userExists = users.some((user) => user.idNumber === values.idNumber);
+    if (userExists) {
+      toast({
+        variant: "destructive",
+        description: `A record already exists for ID ${values.idNumber}.`,
+        title: "ERROR",
       });
-
+    } else {
+      axios
+        .post("http://localhost:8080/api/", values)
+        .then((response) => {
+          toast({
+            description: `ID ${values.idNumber} successfully registered!`,
+            title: "✅ SUCCESS",
+          });
+          fetchUsers();
+        })
+        .catch((error) => {
+          toast({
+            variant: "destructive",
+            description: `An error occurred updating the attendance for ID ${values.idNumber}`,
+            title: "❌ ERROR",
+          });
+        });
+    }
     reset({});
   };
 
