@@ -7,7 +7,6 @@ import { useUser } from "@/context/UserContext";
 
 export const Page = () => {
   const { users, loading } = useUser();
-  console.log(users);
   return (
     <>
       <div className="flex flex-col">

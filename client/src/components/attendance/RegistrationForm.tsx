@@ -15,7 +15,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "../ui/use-toast";
 import axios from "axios";
-import { User } from "@/types/types";
 import { useUser } from "@/context/UserContext";
 
 export const RegistrationForm = () => {
