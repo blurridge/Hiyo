@@ -3,6 +3,7 @@ import Image from "next/image";
 import hiyoLogo from "../../../../public/hiyo_logo.svg";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm } from "./LoginForm";
+import { RegistrationAdminForm } from "./RegistrationAdminForm";
 
 export const LoginCard = () => {
   return (
@@ -21,7 +22,9 @@ export const LoginCard = () => {
           </CardContent>
         </TabsContent>
         <TabsContent value="register">
-          <CardContent></CardContent>
+          <CardContent>
+            <RegistrationAdminForm />
+          </CardContent>
         </TabsContent>
       </Card>
     </Tabs>

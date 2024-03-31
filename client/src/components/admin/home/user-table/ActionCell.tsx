@@ -25,7 +25,7 @@ export const ActionCell: React.FC<ActionCellProps> = ({ user }) => {
 
   const deleteUser = (idNumber: string) => {
     axios
-      .delete(`http://localhost:8080/api/user/${idNumber}`)
+      .delete(`http://localhost:8080/api/user/${idNumber}/delete`)
       .then((response) => {
         toast({
           description: `ID ${idNumber} successfully deleted!`,

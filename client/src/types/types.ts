@@ -14,3 +14,8 @@ export type Attendance = {
   timeEntered: Date;
   timeLeft: Date;
 };
+
+export type AdminRequestUser = {
+  idNumber: string;
+  email: string;
+};

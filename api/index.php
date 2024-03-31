@@ -13,39 +13,55 @@ $conn = $objDb->connect();
 $method = $_SERVER['REQUEST_METHOD'];
 switch ($method) {
     case 'GET':
-        // Adjust the SQL to join the users table with the attendance table
-        $sql = "SELECT users.*, attendance.attendanceId, attendance.timeEntered, attendance.timeLeft 
-    FROM users
-    LEFT JOIN attendance ON users.idNumber = attendance.idNumber";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $req = explode('/', $_SERVER['REQUEST_URI']);
+        if (strcmp($req[2], "users") == 0) {
+            // Adjust the SQL to join the users table with the attendance table
+            $sql = "SELECT users.*, attendance.attendanceId, attendance.timeEntered, attendance.timeLeft 
+        FROM users
+        LEFT JOIN attendance ON users.idNumber = attendance.idNumber";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Group attendance records by user
-        $users = [];
-        foreach ($results as $row) {
-            $idNumber = $row['idNumber'];
-            if (!isset($users[$idNumber])) {
-                $users[$idNumber] = [
-                    'idNumber' => $row['idNumber'],
-                    'userName' => $row['userName'],
-                    'address' => $row['address'],
-                    'contactNumber' => $row['contactNumber'],
-                    'email' => $row['email'],
-                    'attendance' => [],
-                ];
+            // Group attendance records by user
+            $users = [];
+            foreach ($results as $row) {
+                $idNumber = $row['idNumber'];
+                if (!isset($users[$idNumber])) {
+                    $users[$idNumber] = [
+                        'idNumber' => $row['idNumber'],
+                        'userName' => $row['userName'],
+                        'address' => $row['address'],
+                        'contactNumber' => $row['contactNumber'],
+                        'email' => $row['email'],
+                        'attendance' => [],
+                    ];
+                }
+                if ($row['attendanceId']) { // Check if there is an attendance record
+                    $users[$idNumber]['attendance'][] = [
+                        'attendanceId' => $row['attendanceId'],
+                        'timeEntered' => $row['timeEntered'],
+                        'timeLeft' => $row['timeLeft'],
+                    ];
+                }
             }
-            if ($row['attendanceId']) { // Check if there is an attendance record
-                $users[$idNumber]['attendance'][] = [
-                    'attendanceId' => $row['attendanceId'],
-                    'timeEntered' => $row['timeEntered'],
-                    'timeLeft' => $row['timeLeft'],
-                ];
+
+            // Convert the users array to a numerically indexed array before encoding
+            echo json_encode(array_values($users));
+        } else if ((strcmp($req[3], "requests") == 0) && (strcmp($req[2], "admin") == 0)) {
+            $sql = "SELECT idNumber, email FROM admin_requests";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all results as an associative array
+
+            if ($results) {
+                echo json_encode(['status' => 1, 'message' => 'Admin requests fetched successfully.', 'data' => $results]);
+            } else {
+                // No results found, but the query was successful
+                echo json_encode(['status' => 0, 'message' => 'No admin requests found.']);
             }
         }
 
-        // Convert the users array to a numerically indexed array before encoding
-        echo json_encode(array_values($users));
         break;
 
     case "POST":
@@ -76,19 +92,21 @@ switch ($method) {
             $data = json_decode(file_get_contents('php://input'));
             $idNumber = $data->idNumber;
             $email = $data->email;
-            $password = $data->pasword;
+            $password = $data->password;
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            $sql = "INSERT INTO admin_requests(idNumber, email, password) VALUES (:idNumber, :email, :passwordHash)";
+            $sql = "INSERT INTO admin_requests(idNumber, email, passwordHash) VALUES (:idNumber, :email, :passwordHash)";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':idNumber', $idNumber);
             $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':password', $passwordHash);
+            $stmt->bindParam(':passwordHash', $passwordHash);
 
             if ($stmt->execute()) {
                 echo json_encode(['status' => 1, 'message' => 'Admin request submitted successfully.']);
+                break;
             } else {
                 echo json_encode(['status' => 0, 'message' => 'Failed to submit admin request.']);
+                break;
             }
         } else if (strcmp($req[3], "register") == 0 && strcmp($req[2], "user") == 0) { // POST for normal registration
             $user = json_decode(file_get_contents('php://input'));
@@ -127,6 +145,48 @@ switch ($method) {
             }
 
             echo json_encode($response);
+        } else if (strcmp($req[4], "approve") == 0 && strcmp($req[2], "admin") == 0) {
+            // Assuming $path[3] contains the idNumber of the admin request you want to approve
+            $idNumber = $req[3];
+
+            // Start transaction
+            $conn->beginTransaction();
+
+            try {
+                // Fetch the admin request details
+                $sql = "SELECT idNumber, email, passwordHash FROM admin_requests WHERE idNumber = :idNumber";
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(':idNumber', $idNumber);
+                $stmt->execute();
+                $request = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$request) {
+                    throw new Exception("Admin request not found.");
+                }
+
+                // Insert into admins table
+                $sql = "INSERT INTO admins (idNumber, email, password) VALUES (:idNumber, :email, :passwordHash)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(':idNumber', $request['idNumber']);
+                $stmt->bindParam(':email', $request['email']);
+                $stmt->bindParam(':passwordHash', $request['passwordHash']);
+                $stmt->execute();
+
+                // Delete the request from admin_requests
+                $sql = "DELETE FROM admin_requests WHERE idNumber = :idNumber";
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(':idNumber', $idNumber);
+                $stmt->execute();
+
+                // Commit transaction
+                $conn->commit();
+
+                echo json_encode(['status' => 1, 'message' => 'Admin request approved successfully.']);
+            } catch (Exception $e) {
+                // Rollback transaction on error
+                $conn->rollback();
+                echo json_encode(['status' => 0, 'message' => 'Failed to approve admin request. Error: ' . $e->getMessage()]);
+            }
         }
         break;
 
@@ -178,17 +238,32 @@ switch ($method) {
 
 
     case "DELETE":
-        $sql = "DELETE FROM users WHERE idNumber = :idNumber";
-        $path = explode('/', $_SERVER['REQUEST_URI']);
+        $req = explode('/', $_SERVER['REQUEST_URI']);
+        if (strcmp($req[4], "delete") == 0 && strcmp($req[2], "user") == 0) {
+            $sql = "DELETE FROM users WHERE idNumber = :idNumber";
 
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':idNumber', $path[3]);
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':idNumber', $req[3]);
 
-        if ($stmt->execute()) {
-            $response = ['status' => 1, 'message' => 'Record deleted successfully.'];
-        } else {
-            $response = ['status' => 0, 'message' => 'Failed to delete record.'];
+            if ($stmt->execute()) {
+                $response = ['status' => 1, 'message' => 'Record deleted successfully.'];
+            } else {
+                $response = ['status' => 0, 'message' => 'Failed to delete record.'];
+            }
+            echo json_encode($response);
+        } else if (strcmp($req[4], "reject") == 0 && strcmp($req[2], "admin") == 0) {
+            $sql = "DELETE FROM admin_requests WHERE idNumber = :idNumber";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':idNumber', $req[3]);
+
+            if ($stmt->execute()) {
+                $response = ['status' => 1, 'message' => 'Record deleted successfully.'];
+            } else {
+                $response = ['status' => 0, 'message' => 'Failed to delete record.'];
+            }
+            echo json_encode($response);
         }
-        echo json_encode($response);
+
         break;
 }

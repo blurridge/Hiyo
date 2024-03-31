@@ -32,6 +32,18 @@ export const loginFormSchema = z.object({
   password: z.string(),
 });
 
+export const registrationAdminFormSchema = z.object({
+  idNumber: z
+    .string()
+    .min(8, { message: "ID number must be at least 8 characters." })
+    .max(10, { message: "ID number must be at most 10 characters." }),
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string(),
+});
+
 export type attendanceFormType = z.infer<typeof attendanceFormSchema>;
 export type registrationFormType = z.infer<typeof registrationFormSchema>;
 export type loginFormType = z.infer<typeof loginFormSchema>;
+export type registrationAdminFormType = z.infer<
+  typeof registrationAdminFormSchema
+>;

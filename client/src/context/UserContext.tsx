@@ -28,7 +28,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const fetchUsers = () => {
     setLoading(true);
     axios
-      .get("http://localhost:8080/api/")
+      .get("http://localhost:8080/api/users")
       .then(function (response) {
         setUsers(response.data);
         setLoading(false);

@@ -34,5 +34,6 @@ CREATE TABLE admin_requests (
 );
 
 INSERT INTO users(idNumber, userName, address, contactNumber, email) VALUES ("18020919", "Zach Riane Machacon", "Cebu", "09173198899", "18020919@usc.edu.ph");
+INSERT INTO users(idNumber, userName, address, contactNumber, email) VALUES ("21012010", "Juan Dela Cruz", "Cebu", "09173198899", "21012010@usc.edu.ph");
 INSERT INTO admins(idNumber, email, password) VALUES ("18020919", "18020919@usc.edu.ph", "admin");
 /* Test Cases */
