@@ -2,17 +2,8 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { User } from "@/types/types";
-import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { AttendanceTable } from "../attendance-table/AttendanceTable";
 import { ActionCell } from "./ActionCell";
+import { AttendanceSheet } from "./AttendanceSheet";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -38,21 +29,10 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "attendance",
     header: "Attendance",
+    filterFn: 'dateFilterFn',
     cell: ({ row }) => {
       const user = row.original;
-      return (
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline">View Attendance</Button>
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>Attendance record of {user.userName}</SheetTitle>
-            </SheetHeader>
-            <AttendanceTable attendance={user.attendance} />
-          </SheetContent>
-        </Sheet>
-      );
+      return <AttendanceSheet user={user} />;
     },
   },
   {

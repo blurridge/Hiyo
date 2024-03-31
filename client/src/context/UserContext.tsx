@@ -10,7 +10,7 @@ import {
 } from "react";
 
 type UserContextProps = {
-  users: User[] & Attendance[];
+  users: User[];
   loading: boolean;
   fetchUsers: () => void;
 };
@@ -22,7 +22,7 @@ const UserContext = createContext<UserContextProps>({
 });
 
 export const UserContextProvider = ({ children }: { children: ReactNode }) => {
-  const [users, setUsers] = useState<User[] & Attendance[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchUsers = () => {
@@ -42,6 +42,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     fetchUsers();
   }, []);
+  
   return (
     <UserContext.Provider value={{ users, loading, fetchUsers }}>
       {children}

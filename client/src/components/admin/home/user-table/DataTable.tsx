@@ -8,6 +8,7 @@ import {
   getPaginationRowModel,
   getFilteredRowModel,
   useReactTable,
+  FilterFn,
 } from "@tanstack/react-table";
 
 import {
@@ -29,6 +30,14 @@ import { Button } from "@/components/ui/button";
 import { DateTimePicker } from "@/components/ui/date-time-picker/date-time-picker";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
+import dateFilterFn from "./dateFilter";
+import { User } from "@/types/types";
+
+declare module "@tanstack/table-core" {
+  interface FilterFns {
+    dateFilterFn: FilterFn<User>;
+  }
+}
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -45,16 +54,22 @@ export function DataTable<TData, TValue>({
   const handleDateChange = (date: Date | undefined) => {
     if (date) {
       setSelectedDate(date);
+      setColumnFilters((old) => [
+        ...old.filter((filter) => filter.id !== "attendance"),
+        {
+          id: "attendance",
+          value: { date, time: date },
+        },
+      ]);
     }
   };
-
-  useEffect(() => {
-    console.log(selectedDate);
-  }, [selectedDate]);
 
   const table = useReactTable({
     data,
     columns,
+    filterFns: {
+      dateFilterFn: dateFilterFn,
+    },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onColumnFiltersChange: setColumnFilters,
@@ -63,6 +78,10 @@ export function DataTable<TData, TValue>({
       columnFilters,
     },
   });
+
+  useEffect(() => {
+    setColumnFilters([]); // Resets filters everytime selected filter is changed.
+  }, [filter]);
 
   return (
     <div className="mx-4">
