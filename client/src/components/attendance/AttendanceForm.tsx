@@ -33,7 +33,7 @@ export const AttendanceForm = () => {
     const userExists = users.some((user) => user.idNumber === values.idNumber);
     if (userExists) {
       axios
-        .put("http://localhost:8080/api/", values)
+        .put("http://localhost:8080/api/user/attendance", values)
         .then((response) => {
           // Interpret response to customize the toast message
           let toastMessage = response.data.message;

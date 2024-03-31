@@ -18,4 +18,21 @@ CREATE TABLE attendance (
     FOREIGN KEY (idNumber) REFERENCES users(idNumber) ON DELETE CASCADE
 );
 
+CREATE TABLE admins (
+    adminId INT AUTO_INCREMENT PRIMARY KEY,
+    idNumber VARCHAR(10),
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    FOREIGN KEY (idNumber) REFERENCES users(idNumber) ON DELETE CASCADE
+);
+
+CREATE TABLE admin_requests (
+    requestId INT AUTO_INCREMENT PRIMARY KEY,
+    idNumber VARCHAR(10),
+    email VARCHAR(255) NOT NULL UNIQUE,
+    passwordHash VARCHAR(255) NOT NULL
+);
+
+INSERT INTO users(idNumber, userName, address, contactNumber, email) VALUES ("18020919", "Zach Riane Machacon", "Cebu", "09173198899", "18020919@usc.edu.ph");
+INSERT INTO admins(idNumber, email, password) VALUES ("18020919", "18020919@usc.edu.ph", "admin");
 /* Test Cases */

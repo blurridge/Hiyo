@@ -1,5 +1,5 @@
 "use client";
-import { Attendance, User } from "@/types/types";
+import { User } from "@/types/types";
 import axios from "axios";
 import {
   ReactNode,

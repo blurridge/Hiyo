@@ -43,7 +43,7 @@ export const RegistrationForm = () => {
       });
     } else {
       axios
-        .post("http://localhost:8080/api/", values)
+        .post("http://localhost:8080/api/user/register", values)
         .then((response) => {
           toast({
             description: `ID ${values.idNumber} successfully registered!`,

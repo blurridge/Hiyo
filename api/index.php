@@ -49,42 +49,85 @@ switch ($method) {
         break;
 
     case "POST":
-        $user = json_decode(file_get_contents('php://input'));
-        $conn->beginTransaction();
-        $currentTime = date("Y-m-d H:i:s");
-
-        try {
-            // Insert into users table
-            $sql = "INSERT INTO users(idNumber, userName, address, contactNumber, email) VALUES(:idNumber, :userName, :address, :contactNumber, :email)";
+        $req = explode('/', $_SERVER['REQUEST_URI']);
+        if (strcmp($req[3], "login") == 0 && strcmp($req[2], "admin") == 0) {
+            $data = json_decode(file_get_contents('php://input'));
+            $email = $data->email;
+            $password = $data->pasword;
+            $sql = "SELECT * FROM admins WHERE email = :email";
             $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':idNumber', $user->idNumber);
-            $stmt->bindParam(':userName', $user->userName);
-            $stmt->bindParam(':address', $user->address);
-            $stmt->bindParam(':contactNumber', $user->contactNumber);
-            $stmt->bindParam(':email', $user->email);
+            $stmt->bindParam(':email', $email);
             $stmt->execute();
+            $adminUser = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Insert into attendance table
-            $timeLeft = isset($user->timeLeft) && $user->timeLeft !== "" ? $user->timeLeft : null;
+            if (!$adminUser) {
+                echo json_encode(['status' => 0, 'message' => 'Authentication failed. User not found.']);
+                break; // Stop execution if the user is not found
+            }
+            // Verify the password
+            if (!password_verify($password, $adminUser['password'])) {
+                echo json_encode(['status' => 0, 'message' => 'Authentication failed. Incorrect password.']);
+                break; // Stop execution if the password does not match
+            } else {
+                echo json_encode(['status' => 1, 'message' => 'Authentication successful.']);
+                break;
+            }
+        } else if (strcmp($req[3], "register") == 0 && strcmp($req[2], "admin") == 0) {
+            $data = json_decode(file_get_contents('php://input'));
+            $idNumber = $data->idNumber;
+            $email = $data->email;
+            $password = $data->pasword;
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            $sql = "INSERT INTO attendance(idNumber, timeEntered, timeLeft) VALUES(:idNumber, :timeEntered, :timeLeft)";
+            $sql = "INSERT INTO admin_requests(idNumber, email, password) VALUES (:idNumber, :email, :passwordHash)";
             $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':idNumber', $user->idNumber);
-            $stmt->bindParam(':timeEntered', $currentTime);
-            $stmt->bindParam(':timeLeft', $timeLeft, $timeLeft === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
-            $stmt->execute();
+            $stmt->bindParam(':idNumber', $idNumber);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':password', $passwordHash);
 
-            // Commit transaction
-            $conn->commit();
+            if ($stmt->execute()) {
+                echo json_encode(['status' => 1, 'message' => 'Admin request submitted successfully.']);
+            } else {
+                echo json_encode(['status' => 0, 'message' => 'Failed to submit admin request.']);
+            }
+        } else if (strcmp($req[3], "register") == 0 && strcmp($req[2], "user") == 0) { // POST for normal registration
+            $user = json_decode(file_get_contents('php://input'));
+            $conn->beginTransaction();
+            $currentTime = date("Y-m-d H:i:s");
 
-            $response = ['status' => 1, 'message' => 'User and attendance records created successfully.'];
-        } catch (Exception $e) {
-            // Rollback transaction on error
-            $conn->rollback();
-            $response = ['status' => 0, 'message' => 'Failed to create records. Error: ' . $e->getMessage()];
+            try {
+                // Insert into users table
+                $sql = "INSERT INTO users(idNumber, userName, address, contactNumber, email) VALUES(:idNumber, :userName, :address, :contactNumber, :email)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(':idNumber', $user->idNumber);
+                $stmt->bindParam(':userName', $user->userName);
+                $stmt->bindParam(':address', $user->address);
+                $stmt->bindParam(':contactNumber', $user->contactNumber);
+                $stmt->bindParam(':email', $user->email);
+                $stmt->execute();
+
+                // Insert into attendance table
+                $timeLeft = isset($user->timeLeft) && $user->timeLeft !== "" ? $user->timeLeft : null;
+
+                $sql = "INSERT INTO attendance(idNumber, timeEntered, timeLeft) VALUES(:idNumber, :timeEntered, :timeLeft)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(':idNumber', $user->idNumber);
+                $stmt->bindParam(':timeEntered', $currentTime);
+                $stmt->bindParam(':timeLeft', $timeLeft, $timeLeft === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+                $stmt->execute();
+
+                // Commit transaction
+                $conn->commit();
+
+                $response = ['status' => 1, 'message' => 'User and attendance records created successfully.'];
+            } catch (Exception $e) {
+                // Rollback transaction on error
+                $conn->rollback();
+                $response = ['status' => 0, 'message' => 'Failed to create records. Error: ' . $e->getMessage()];
+            }
+
+            echo json_encode($response);
         }
-
-        echo json_encode($response);
         break;
 
     case "PUT":

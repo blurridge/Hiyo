@@ -14,13 +14,3 @@ export type Attendance = {
   timeEntered: Date;
   timeLeft: Date;
 };
-
-export type UpdateEnterPayload = {
-  idNumber: string;
-  timeEntered: Date;
-};
-
-export type UpdateExitPayload = {
-  idNumber: string;
-  timeLeft: Date;
-};

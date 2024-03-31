@@ -27,5 +27,11 @@ export const registrationFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
 });
 
+export const loginFormSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string(),
+});
+
 export type attendanceFormType = z.infer<typeof attendanceFormSchema>;
 export type registrationFormType = z.infer<typeof registrationFormSchema>;
+export type loginFormType = z.infer<typeof loginFormSchema>;
