@@ -12,7 +12,7 @@ export const UserOptions = () => {
   return (
     <>
       <div className="flex gap-2 items-center justify-center mr-7">
-        <span className="font-bold">{user}</span>
+        <span className="font-semibold">{user}</span>
         <DropdownMenu>
           <DropdownMenuTrigger>
             <ChevronDown />
