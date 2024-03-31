@@ -6,10 +6,11 @@ export type User = {
   email: string;
   timeEntered: Date | null;
   timeLeft: Date | null;
+  attendance: Attendance[];
 };
 
 export type Attendance = {
-  idNumber: string;
+  attendanceId: string;
   timeEntered: Date;
   timeLeft: Date;
 };
