@@ -43,7 +43,7 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const user = row.original;
       const { toast } = useToast();
-      const { fetchUsers } = useUser();
+      const { users, fetchUsers } = useUser();
       const deleteUser = (idNumber: string) => {
         const id = idNumber;
         axios
@@ -80,7 +80,6 @@ export const columns: ColumnDef<User>[] = [
               Copy ID number
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
             <DropdownMenuItem onClick={() => deleteUser(user.idNumber)}>
               Delete
             </DropdownMenuItem>

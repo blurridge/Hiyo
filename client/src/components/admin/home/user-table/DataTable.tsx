@@ -26,8 +26,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { DateTimePicker } from "@/components/ui/date-time-picker/date-time-picker";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -40,6 +41,17 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [filter, setFilter] = useState<string>("idNumber");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
+    }
+  };
+
+  useEffect(() => {
+    console.log(selectedDate);
+  }, [selectedDate]);
+
   const table = useReactTable({
     data,
     columns,
@@ -72,7 +84,7 @@ export function DataTable<TData, TValue>({
             <SelectItem value="time-day">Time and Day</SelectItem>
           </SelectContent>
         </Select>
-        {filter !== "time-day" && (
+        {filter !== "time-day" ? (
           <Input
             placeholder="Enter search term..."
             value={(table.getColumn(filter)?.getFilterValue() as string) ?? ""}
@@ -81,6 +93,8 @@ export function DataTable<TData, TValue>({
             }
             className="max-w-sm"
           />
+        ) : (
+          <DateTimePicker handleDateChange={handleDateChange} />
         )}
       </div>
       <div className="rounded-md border">
