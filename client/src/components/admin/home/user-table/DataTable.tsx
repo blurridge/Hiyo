@@ -18,6 +18,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
@@ -32,6 +39,7 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [filter, setFilter] = useState<string>("idNumber");
   const table = useReactTable({
     data,
     columns,
@@ -46,15 +54,34 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="mx-4">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter ID Numbers..."
-          value={(table.getColumn("idNumber")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("idNumber")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+      <div className="flex gap-2 items-center py-4">
+        <Select
+          onValueChange={(newValue: string) => {
+            setFilter(newValue);
+          }}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="idNumber">ID Number</SelectItem>
+            <SelectItem value="userName">Name</SelectItem>
+            <SelectItem value="address">Address</SelectItem>
+            <SelectItem value="contactNumber">Contact Number</SelectItem>
+            <SelectItem value="email">Email</SelectItem>
+            <SelectItem value="time-day">Time and Day</SelectItem>
+          </SelectContent>
+        </Select>
+        {filter !== "time-day" && (
+          <Input
+            placeholder="Enter search term..."
+            value={(table.getColumn(filter)?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn(filter)?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+        )}
       </div>
       <div className="rounded-md border">
         <Table>
