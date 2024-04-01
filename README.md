@@ -1,4 +1,4 @@
-# Hiyo - An Attendance Tracker App 🎖️
+# Hiyo - An Attendance Tracker App 📅
 
 ![Hiyo Logo](https://i.imgur.com/2PlmHtt.png)  
 ![Commit Shield](https://img.shields.io/github/last-commit/blurridge/Hiyo?style=for-the-badge)
@@ -6,7 +6,7 @@
 
 ## Context
 
-For my final project in the CPE 3222 Web Development course at the University of San Carlos, I developed an Hiyo, an attendance tracker app, aimed at enhancing contact tracing efforts within the Department of Computer Engineering. While the application was fully developed and functional, the scenario it addressed—streamlining contact tracing within the department—was theoretical, crafted to mimic real-world challenges amidst global health concerns.
+For my final project in the CPE 3222 Web Development course at the University of San Carlos, I developed Hiyo, an attendance tracker app, aimed at enhancing contact tracing efforts within the Department of Computer Engineering. While the application was fully developed and functional, the scenario it addressed—streamlining contact tracing within the department—was theoretical, crafted to mimic real-world challenges amidst global health concerns.
 
 The motivation behind this project stemmed from a hypothetical need to improve health and safety protocols in educational institutions through technology. Traditional manual contact tracing methods are fraught with inefficiencies, such as time consumption and data inaccuracies, which can hinder the effectiveness of health protocols. This project sought to tackle these issues by providing a digital solution that automates the process of tracking entries and exits, thereby enhancing safety measures with accuracy and efficiency.
 
