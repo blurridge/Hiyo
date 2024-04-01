@@ -18,13 +18,14 @@ import { useAuth } from "@/context/AuthContext";
 export const LoginForm = () => {
   const form = useForm<loginFormType>({
     resolver: zodResolver(loginFormSchema),
+    mode: "onBlur",
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const { reset } = form;
+  const { formState, reset } = form;
   const { login } = useAuth();
 
   const onSubmit = (values: loginFormType) => {
@@ -61,7 +62,11 @@ export const LoginForm = () => {
             </FormItem>
           )}
         />
-        <Button className="bg-hiyo-purple hover:bg-dark-purple" type="submit">
+        <Button
+          className="bg-hiyo-purple hover:bg-dark-purple"
+          type="submit"
+          disabled={!formState.isValid}
+        >
           Submit
         </Button>
       </form>

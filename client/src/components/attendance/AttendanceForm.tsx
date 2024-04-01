@@ -20,12 +20,13 @@ import axios from "axios";
 export const AttendanceForm = () => {
   const form = useForm<attendanceFormType>({
     resolver: zodResolver(attendanceFormSchema),
+    mode: "onBlur",
     defaultValues: {
       idNumber: "",
     },
   });
 
-  const { reset } = form;
+  const { formState, reset } = form;
   const { toast } = useToast();
   const { users, loading } = useUser();
 
@@ -82,7 +83,11 @@ export const AttendanceForm = () => {
             </FormItem>
           )}
         />
-        <Button className="bg-hiyo-purple hover:bg-dark-purple" type="submit">
+        <Button
+          className="bg-hiyo-purple hover:bg-dark-purple"
+          type="submit"
+          disabled={!formState.isValid}
+        >
           Submit
         </Button>
       </form>

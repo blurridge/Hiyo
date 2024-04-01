@@ -20,6 +20,7 @@ import { useUser } from "@/context/UserContext";
 export const RegistrationForm = () => {
   const form = useForm<registrationFormType>({
     resolver: zodResolver(registrationFormSchema),
+    mode: "onBlur",
     defaultValues: {
       idNumber: "",
       userName: "",
@@ -29,7 +30,7 @@ export const RegistrationForm = () => {
     },
   });
 
-  const { reset } = form;
+  const { formState, reset } = form;
   const { toast } = useToast();
   const { users, fetchUsers } = useUser();
 
@@ -130,7 +131,11 @@ export const RegistrationForm = () => {
             </FormItem>
           )}
         />
-        <Button className="bg-hiyo-purple hover:bg-dark-purple" type="submit">
+        <Button
+          className="bg-hiyo-purple hover:bg-dark-purple"
+          type="submit"
+          disabled={!formState.isValid}
+        >
           Submit
         </Button>
       </form>

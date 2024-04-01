@@ -22,6 +22,7 @@ import { useToast } from "@/components/ui/use-toast";
 export const RegistrationAdminForm = () => {
   const form = useForm<registrationAdminFormType>({
     resolver: zodResolver(registrationAdminFormSchema),
+    mode: "onBlur",
     defaultValues: {
       idNumber: "",
       email: "",
@@ -29,7 +30,7 @@ export const RegistrationAdminForm = () => {
     },
   });
 
-  const { reset } = form;
+  const { formState, reset } = form;
   const { register } = useAuth();
   const { toast } = useToast();
 
@@ -92,7 +93,11 @@ export const RegistrationAdminForm = () => {
             </FormItem>
           )}
         />
-        <Button className="bg-hiyo-purple hover:bg-dark-purple" type="submit">
+        <Button
+          className="bg-hiyo-purple hover:bg-dark-purple"
+          type="submit"
+          disabled={!formState.isValid}
+        >
           Submit
         </Button>
       </form>
