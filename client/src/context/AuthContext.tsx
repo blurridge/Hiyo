@@ -7,7 +7,7 @@ type AuthContextProps = {
   user: string | null;
   login: (userData: loginFormType) => void;
   logout: () => void;
-  register: (userData: registrationAdminFormType) => boolean;
+  register: (userData: registrationAdminFormType) => Promise<boolean>;
   loading: boolean;
 };
 
@@ -15,7 +15,7 @@ const AuthContext = createContext<AuthContextProps>({
   user: null,
   login: (userData: loginFormType) => {},
   logout: () => {},
-  register: (userData: registrationAdminFormType) => false,
+  register: async (userData: registrationAdminFormType) => false,
   loading: false,
 });
 
@@ -44,18 +44,18 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
-  const register = async (userData: registrationAdminFormType) => {
+  const register = async (
+    userData: registrationAdminFormType
+  ): Promise<boolean> => {
     setLoading(true);
-    axios
-      .post("http://localhost:8080/api/admin/register", userData)
-      .then((response) => {
-        setLoading(false);
-        return true;
-      })
-      .catch((error) => {
-        setLoading(false);
-        return false;
-      });
+    try {
+      await axios.post("http://localhost:8080/api/admin/register", userData);
+      setLoading(false);
+      return true; // Registration succeeded
+    } catch (error) {
+      setLoading(false);
+      return false; // Registration failed
+    }
   };
 
   return (

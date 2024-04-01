@@ -85,7 +85,7 @@ export const RegistrationForm = () => {
       toast({
         variant: "destructive",
         description: `A record already exists for ID ${watch("idNumber")}.`,
-        title: "ERROR",
+        title: "❌ ERROR",
       });
       reset({});
       setShowDialog(false);

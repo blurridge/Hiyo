@@ -11,6 +11,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   registrationAdminFormType,
@@ -18,6 +27,8 @@ import {
 } from "@/types/schema";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
+import { useRequests } from "@/context/RequestContext";
+import { useState } from "react";
 
 export const RegistrationAdminForm = () => {
   const form = useForm<registrationAdminFormType>({
@@ -30,25 +41,82 @@ export const RegistrationAdminForm = () => {
     },
   });
 
-  const { formState, reset } = form;
+  const { formState, reset, watch } = form;
   const { register } = useAuth();
   const { toast } = useToast();
+  const { requests, fetchRequests } = useRequests();
+  const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [formValues, setFormValues] = useState<
+    registrationAdminFormType | undefined
+  >(undefined);
 
-  const onSubmit = (values: registrationAdminFormType) => {
-    let registrationStatus: boolean = register(values);
-    if (registrationStatus) {
-      toast({
-        description: `Registration submitted for ${values.idNumber}. Please wait for approval.`,
-        title: "✅ SUCCESS",
-      });
+  const formatRequestInfo = () => {
+    if (!formValues) return null;
+
+    const { idNumber, email } = formValues;
+
+    return (
+      <div>
+        <p>
+          <strong>ID Number:</strong> {idNumber}
+        </p>
+        <p>
+          <strong>Email:</strong> {email}
+        </p>
+      </div>
+    );
+  };
+
+  const checkIfRequestExists = () => {
+    const requestExists = requests.some(
+      (request) => request.idNumber === watch("idNumber")
+    );
+    if (!requestExists) {
+      setShowDialog(true);
+      return true;
     } else {
       toast({
-        description: `Registration error for ${values.idNumber}.`,
-        title: "❌ ERROR",
         variant: "destructive",
+        description: `A request already exists for ID ${watch(
+          "idNumber"
+        )}. Please wait for feedback.`,
+        title: "❌ ERROR",
       });
+      reset({});
+      setShowDialog(false);
+      return false;
     }
+  };
+
+  const onSubmit = (values: registrationAdminFormType) => {
+    let requestExists = checkIfRequestExists();
+    if (requestExists) {
+      setFormValues(values);
+    } else {
+      setFormValues(undefined);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (formValues) {
+      let registrationStatus: boolean = await register(formValues);
+      if (registrationStatus) {
+        toast({
+          description: `Registration submitted for ${formValues.idNumber}. Please wait for approval.`,
+          title: "✅ SUCCESS",
+        });
+      } else {
+        toast({
+          description: `Registration error for ${formValues.idNumber}.`,
+          title: "❌ ERROR",
+          variant: "destructive",
+        });
+      }
+    }
+    setFormValues(undefined);
+    setShowDialog(false);
     reset({});
+    fetchRequests();
   };
 
   return (
@@ -100,6 +168,31 @@ export const RegistrationAdminForm = () => {
         >
           Submit
         </Button>
+        <Dialog open={showDialog} onOpenChange={setShowDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                Are you sure you want to register with the following details?
+              </DialogTitle>
+              <DialogDescription></DialogDescription>
+            </DialogHeader>
+            {formatRequestInfo()}
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="button" className="bg-red-700 hover:bg-red-900">
+                  Close
+                </Button>
+              </DialogClose>
+              <Button
+                className="bg-hiyo-purple hover:bg-dark-purple"
+                type="submit"
+                onClick={handleSubmit}
+              >
+                Submit
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </form>
     </Form>
   );
