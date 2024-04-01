@@ -23,7 +23,7 @@ const AuthContext = createContext<AuthContextProps>({
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<string | null>(
-    localStorage.getItem("user") || null
+    typeof window !== "undefined" ? localStorage.getItem("user") : null
   );
   const [loading, setLoading] = useState<boolean>(false);
   const { toast } = useToast();
