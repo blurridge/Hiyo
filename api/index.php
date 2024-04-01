@@ -69,7 +69,7 @@ switch ($method) {
         if (strcmp($req[3], "login") == 0 && strcmp($req[2], "admin") == 0) {
             $data = json_decode(file_get_contents('php://input'));
             $email = $data->email;
-            $password = $data->pasword;
+            $password = $data->password;
             $sql = "SELECT * FROM admins WHERE email = :email";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':email', $email);

@@ -1,7 +1,9 @@
+"use client";
+
 import React, { ReactNode, createContext, useContext, useState } from "react";
 import { loginFormType, registrationAdminFormType } from "@/types/schema";
-import { User } from "@/types/types";
 import axios from "axios";
+import { useToast } from "@/components/ui/use-toast";
 
 type AuthContextProps = {
   user: string | null;
@@ -24,13 +26,28 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     localStorage.getItem("user") || null
   );
   const [loading, setLoading] = useState<boolean>(false);
+  const { toast } = useToast();
   const login = (userData: loginFormType) => {
     setLoading(true);
     axios
       .post("http://localhost:8080/api/admin/login", userData)
       .then((response) => {
-        localStorage.setItem("user", userData.email);
-        setUser(userData.email);
+        console.log(response);
+        if (response.data.status === 1) {
+          toast({
+            description: `Welcome ${userData.email}!`,
+            title: "✅ SUCCESS",
+          });
+          localStorage.setItem("user", userData.email);
+          setUser(userData.email);
+        } else {
+          toast({
+            variant: "destructive",
+            description: `Invalid credentials. Please try again.`,
+            title: "❌ ERROR",
+          });
+          setUser(null);
+        }
         setLoading(false);
       })
       .catch((error) => {
@@ -42,6 +59,10 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     localStorage.removeItem("user");
     setUser(null);
+    toast({
+      description: `Logged out!`,
+      title: "✅ SUCCESS",
+    });
   };
 
   const register = async (
