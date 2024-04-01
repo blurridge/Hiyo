@@ -1,6 +1,6 @@
 # Hiyo - An Attendance Tracker App 🎖️
 
-![Hiyo Logo](https://i.imgur.com/2PlmHtt.png)
+![Hiyo Logo](https://i.imgur.com/2PlmHtt.png)  
 ![Commit Shield](https://img.shields.io/github/last-commit/blurridge/Hiyo?style=for-the-badge)
 ![License](https://img.shields.io/github/license/blurridge/Hiyo?style=for-the-badge)
 
