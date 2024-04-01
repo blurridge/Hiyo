@@ -24,12 +24,12 @@ export const registrationFormSchema = z.object({
     .string()
     .min(11, { message: "Contact number must be at least 11 digits." })
     .max(11, { message: "Contact number must be at most 11 digits." }),
-  email: z.string().email({ message: "Invalid email address" }),
+  email: z.string().email({ message: "Invalid email address." }),
 });
 
 export const loginFormSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
-  password: z.string(),
+  email: z.string().email({ message: "Invalid email address." }),
+  password: z.string().min(1, { message: "Please enter a valid password." }),
 });
 
 export const registrationAdminFormSchema = z.object({
@@ -37,8 +37,8 @@ export const registrationAdminFormSchema = z.object({
     .string()
     .min(8, { message: "ID number must be at least 8 characters." })
     .max(10, { message: "ID number must be at most 10 characters." }),
-  email: z.string().email({ message: "Invalid email address" }),
-  password: z.string(),
+  email: z.string().email({ message: "Invalid email address." }),
+  password: z.string().min(1, { message: "Please enter a valid password." }),
 });
 
 export type attendanceFormType = z.infer<typeof attendanceFormSchema>;

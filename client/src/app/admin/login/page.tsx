@@ -15,7 +15,7 @@ export const Page = () => {
   }, [user, loading]);
 
   return (
-    <div className="flex justify-center items-center h-screen w-screen bg-light-blue">
+    <div className="flex justify-center items-center min-h-screen min-w-screen bg-light-blue">
       <LoginCard />
     </div>
   );

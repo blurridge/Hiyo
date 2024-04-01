@@ -7,12 +7,12 @@ import { RegistrationForm } from "./RegistrationForm";
 
 export const AttendanceCard = () => {
   return (
-    <Tabs defaultValue="attendance" className="w-[400px] flex flex-col gap-2">
+    <Tabs defaultValue="attendance" className="my-10 w-[400px] flex flex-col gap-2">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="attendance">Attendance</TabsTrigger>
         <TabsTrigger value="register">Register</TabsTrigger>
       </TabsList>
-      <Card>
+      <Card className="max-h-screen">
         <CardHeader className="flex items-center justify-center">
           <Image priority src={hiyoLogo} alt="Hiyo Logo" width={200} />
         </CardHeader>
