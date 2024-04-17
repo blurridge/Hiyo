@@ -3,14 +3,14 @@ import { z } from "zod";
 export const attendanceFormSchema = z.object({
   idNumber: z
     .string()
-    .min(8, { message: "ID number must be at least 8 characters." })
+    .min(7, { message: "ID number must be at least 7 characters." })
     .max(10, { message: "ID number must be at most 10 characters." }),
 });
 
 export const registrationFormSchema = z.object({
   idNumber: z
     .string()
-    .min(8, { message: "ID number must be at least 8 characters." })
+    .min(7, { message: "ID number must be at least 7 characters." })
     .max(10, { message: "ID number must be at most 10 characters." }),
   userName: z
     .string()
@@ -35,7 +35,7 @@ export const loginFormSchema = z.object({
 export const registrationAdminFormSchema = z.object({
   idNumber: z
     .string()
-    .min(8, { message: "ID number must be at least 8 characters." })
+    .min(7, { message: "ID number must be at least 7 characters." })
     .max(10, { message: "ID number must be at most 10 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(1, { message: "Please enter a valid password." }),

@@ -21,11 +21,12 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useToast } from "../ui/use-toast";
 import axios from "axios";
 import { useUser } from "@/context/UserContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const RegistrationForm = () => {
   const form = useForm<registrationFormType>({
@@ -40,13 +41,23 @@ export const RegistrationForm = () => {
     },
   });
 
-  const { formState, reset, watch } = form;
+  const { formState, reset, watch, setValue } = form;
   const { toast } = useToast();
   const { users, fetchUsers } = useUser();
   const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [guest, setGuest] = useState<boolean>(false);
   const [formValues, setFormValues] = useState<
     registrationFormType | undefined
   >(undefined);
+
+  useEffect(() => {
+    if (guest) {
+      const uniqueID = getUniqueID();
+      setValue("idNumber", uniqueID);
+    } else {
+      setValue("idNumber", "");
+    }
+  }, [guest]);
 
   const formatUserInfo = () => {
     if (!formValues) return null;
@@ -72,6 +83,17 @@ export const RegistrationForm = () => {
         </p>
       </div>
     );
+  };
+
+  const getUniqueID = () => {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    const charactersLength = characters.length;
+    for (let i = 0; i < 10; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
   };
 
   const checkIfUserExists = () => {
@@ -127,6 +149,17 @@ export const RegistrationForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div className="flex items-center gap-2">
+          <Checkbox onClick={() => setGuest(!guest)} id="guest" />
+          <div className="grid gap-1.5 leading-none">
+            <label
+              htmlFor="guest"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Guest?
+            </label>
+          </div>
+        </div>
         <FormField
           control={form.control}
           name="idNumber"
@@ -134,7 +167,11 @@ export const RegistrationForm = () => {
             <FormItem>
               <FormLabel>ID Number</FormLabel>
               <FormControl>
-                <Input placeholder="e.g. 18020919" {...field} />
+                <Input
+                  placeholder="e.g. 18020919"
+                  disabled={guest}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
