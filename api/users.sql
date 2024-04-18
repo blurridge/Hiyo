@@ -96,3 +96,13 @@ INSERT INTO admin_requests (idNumber, email, passwordHash) VALUES ('25026896', '
 INSERT INTO admin_requests (idNumber, email, passwordHash) VALUES ('25026897', '25026897@usc.edu.ph', '$2b$12$SpqgWyi9sEaiHQAkMjiut.FXbRydwRJULCzsHPPTXpbxxQBOWXhmO');
 INSERT INTO admin_requests (idNumber, email, passwordHash) VALUES ('25026898', '25026898@usc.edu.ph', '$2b$12$SpqgWyi9sEaiHQAkMjiut.FXbRydwRJULCzsHPPTXpbxxQBOWXhmO');
 INSERT INTO admin_requests (idNumber, email, passwordHash) VALUES ('25026899', '25026899@usc.edu.ph', '$2b$12$SpqgWyi9sEaiHQAkMjiut.FXbRydwRJULCzsHPPTXpbxxQBOWXhmO');
+INSERT INTO attendance (idNumber, timeEntered, timeLeft) VALUES
+('18020919', '2024-04-17 08:00:00', '2024-04-17 17:00:00'), 
+('21012010', '2024-04-17 09:00:00', '2024-04-17 17:30:00'), 
+('25026890', '2024-04-18 08:30:00', '2024-04-18 16:30:00'), 
+('25026891', '2024-04-18 08:45:00', '2024-04-18 15:00:00'); 
+INSERT INTO attendance (idNumber, timeEntered, timeLeft) VALUES
+('25026892', '2024-04-16 09:15:00', NULL), 
+('25026893', '2024-04-15 10:00:00', NULL), 
+('25026894', '2024-04-18 11:00:00', NULL), 
+('25026895', '2024-04-18 08:15:00', NULL); 

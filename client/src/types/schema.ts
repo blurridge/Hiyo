@@ -16,10 +16,18 @@ export const registrationFormSchema = z.object({
     .string()
     .min(1, { message: "Name must be at least 1 character." })
     .max(255, { message: "ID number must be at most 255 characters." }),
-  address: z
+  barangay: z
     .string()
-    .min(1, { message: "Address must be at least 1 character." })
-    .max(255, { message: "Address must be at most 255 characters." }),
+    .min(1, { message: "Barangay must be at least 1 character." })
+    .max(255, { message: "Barangay must be at most 255 characters." }),
+  city: z
+    .string()
+    .min(1, { message: "City/town must be at least 1 character." })
+    .max(255, { message: "City/town must be at most 255 characters." }),
+  province: z
+    .string()
+    .min(1, { message: "Province must be at least 1 character." })
+    .max(255, { message: "Province must be at most 255 characters." }),
   contactNumber: z
     .string()
     .min(11, { message: "Contact number must be at least 11 digits." })

@@ -35,7 +35,9 @@ export const RegistrationForm = () => {
     defaultValues: {
       idNumber: "",
       userName: "",
-      address: "",
+      barangay: "",
+      city: "",
+      province: "",
       contactNumber: "",
       email: "",
     },
@@ -62,7 +64,16 @@ export const RegistrationForm = () => {
   const formatUserInfo = () => {
     if (!formValues) return null;
 
-    const { idNumber, userName, address, contactNumber, email } = formValues;
+    const {
+      idNumber,
+      userName,
+      barangay,
+      city,
+      province,
+      contactNumber,
+      email,
+    } = formValues;
+    const address = `${barangay}, ${city}, ${province}`;
 
     return (
       <div>
@@ -125,8 +136,26 @@ export const RegistrationForm = () => {
   };
 
   const handleSubmit = () => {
+    if (!formValues) return null;
+    const {
+      idNumber,
+      userName,
+      barangay,
+      city,
+      province,
+      contactNumber,
+      email,
+    } = formValues;
+    const address = `${barangay}, ${city}, ${province}`;
+    const registrationPayload = {
+      idNumber,
+      userName,
+      address,
+      contactNumber,
+      email,
+    };
     axios
-      .post("http://localhost:8080/api/user/register", formValues)
+      .post("http://localhost:8080/api/user/register", registrationPayload)
       .then((response) => {
         toast({
           description: `ID ${formValues?.idNumber} successfully registered!`,
@@ -205,12 +234,38 @@ export const RegistrationForm = () => {
         />
         <FormField
           control={form.control}
-          name="address"
+          name="barangay"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Address</FormLabel>
+              <FormLabel>Barangay</FormLabel>
               <FormControl>
-                <Input placeholder="e.g. Nasipit, Talamban" {...field} />
+                <Input placeholder="e.g. Barangay Talamban" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="city"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>City/Town</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g. Cebu City" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="province"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Province</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g. Cebu" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
