@@ -92,21 +92,44 @@ switch ($method) {
             $data = json_decode(file_get_contents('php://input'));
             $idNumber = $data->idNumber;
             $email = $data->email;
-            $password = $data->password;
-            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            $sql = "INSERT INTO admin_requests(idNumber, email, passwordHash) VALUES (:idNumber, :email, :passwordHash)";
+            // Check first if ID Number and Email match in users table
+            $sql = "SELECT idNumber, email FROM users WHERE idNumber = :idNumber AND email = :email";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':idNumber', $idNumber);
             $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':passwordHash', $passwordHash);
+            $stmt->execute();
+            $userMatch = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($stmt->execute()) {
-                echo json_encode(['status' => 1, 'message' => 'Admin request submitted successfully.']);
+            $sql = "SELECT idNumber, email FROM admins WHERE idNumber = :idNumber AND email = :email";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':idNumber', $idNumber);
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            $adminMatch = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$userMatch) {
+                echo json_encode(['status' => 0, 'message' => 'User does not exist. Register first.']);
+                break;
+            } else if ($adminMatch) {
+                echo json_encode(['status' => 0, 'message' => 'You are already an admin.']);
                 break;
             } else {
-                echo json_encode(['status' => 0, 'message' => 'Failed to submit admin request.']);
-                break;
+                $password = $data->password;
+                $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+                $sql = "INSERT INTO admin_requests(idNumber, email, passwordHash) VALUES (:idNumber, :email, :passwordHash)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(':idNumber', $idNumber);
+                $stmt->bindParam(':email', $email);
+                $stmt->bindParam(':passwordHash', $passwordHash);
+
+                if ($stmt->execute()) {
+                    echo json_encode(['status' => 1, 'message' => 'Admin request submitted successfully.']);
+                    break;
+                } else {
+                    echo json_encode(['status' => 0, 'message' => 'Failed to submit admin request.']);
+                    break;
+                }
             }
         } else if (strcmp($req[3], "register") == 0 && strcmp($req[2], "user") == 0) { // POST for normal registration
             $user = json_decode(file_get_contents('php://input'));

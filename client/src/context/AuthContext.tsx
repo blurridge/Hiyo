@@ -70,9 +70,12 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   ): Promise<boolean> => {
     setLoading(true);
     try {
-      await axios.post("http://localhost:8080/api/admin/register", userData);
+      const result = await axios.post(
+        "http://localhost:8080/api/admin/register",
+        userData
+      );
       setLoading(false);
-      return true; // Registration succeeded
+      return result.data.status;
     } catch (error) {
       setLoading(false);
       return false; // Registration failed

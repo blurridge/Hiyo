@@ -107,7 +107,7 @@ export const RegistrationAdminForm = () => {
         });
       } else {
         toast({
-          description: `Registration error for ${formValues.idNumber}.`,
+          description: `Registration error for ${formValues.idNumber}. Make sure you are registered or account is not yet admin.`,
           title: "❌ ERROR",
           variant: "destructive",
         });
